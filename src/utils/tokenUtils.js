@@ -3,7 +3,16 @@ import { OAuth2Client } from "google-auth-library";
 import dotenv from "dotenv";
 dotenv.config();
 
+const ENVIRONMENT = process.env.NODE_ENV || "development";
+
+dotenv.config({ path: `.env.${ENVIRONMENT}` });
+
 const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined!");
+}
+
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
