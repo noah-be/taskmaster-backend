@@ -1,6 +1,4 @@
 .DS_Store
 node_modules
-frontend/test/coverage/
-backend/test/coverage/
-frontend/.nyc_output
+tests/coverage/
 .env
