@@ -1,0 +1,21 @@
+services:
+  app:
+    container_name: tm-fe
+    build: .
+    ports:
+      - "3009:3009"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_DB_URI=mongodb://mongo:27017/localDB
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongo-data:
