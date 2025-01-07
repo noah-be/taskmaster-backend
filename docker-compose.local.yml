@@ -7,7 +7,7 @@ services:
     depends_on:
       - mongo
     environment:
-      - MONGO_DB_URI=mongodb://mongo:27017/localDB
+      - MONGODB_URI=mongodb://mongo:27017/localDB
 
   mongo:
     container_name: mongo
