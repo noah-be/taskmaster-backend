@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: tm-fe
+    container_name: tm-be
     build: .
     ports:
       - "3009:3009"
