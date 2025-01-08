@@ -16,3 +16,5 @@ export function startProfiling() {
 export function stopProfiling() {
   Sentry.profiler.stopProfiler();
 }
+
+export { Sentry };

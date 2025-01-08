@@ -1,6 +1,11 @@
 //#region import
 import express from "express";
-import { initSentry, startProfiling, stopProfiling } from "./instrument.js";
+import {
+  Sentry,
+  initSentry,
+  startProfiling,
+  stopProfiling,
+} from "./instrument.js";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
@@ -28,6 +33,7 @@ export const startServer = () => {
     try {
       await dbConnect();
 
+      app.use(Sentry.Handlers.requestHandler());
       app.use(cookieParser());
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
@@ -37,8 +43,7 @@ export const startServer = () => {
       app.use("/api/auth", routes.authRoutes);
       app.use("/api/task", routes.taskRoutes);
 
-      // Middleware
-      Sentry.setupExpressErrorHandler(app);
+      app.use(Sentry.Handlers.errorHandler());
 
       serverInstance = app.listen(port, () => {
         isServerRunning = true;
@@ -55,6 +60,7 @@ export const startServer = () => {
         resolve(serverInstance);
       });
     } catch (error) {
+      Sentry.captureException(error);
       console.error("Error starting server:", error);
       reject(error);
     }
@@ -62,6 +68,8 @@ export const startServer = () => {
 };
 
 export const stopServer = async () => {
+  stopProfiling();
+
   if (serverInstance) {
     await dbDisconnect();
 
@@ -78,7 +86,6 @@ export const stopServer = async () => {
       });
     });
   }
-  stopProfiling();
 };
 
 if (process.env.NODE_ENV !== "test") {
