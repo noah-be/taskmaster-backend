@@ -1,11 +1,7 @@
-//#region import
 import express from "express";
-import {
-  Sentry,
-  initSentry,
-  startProfiling,
-  stopProfiling,
-} from "./instrument.js";
+
+import * as Sentry from "@sentry/node";
+
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
@@ -15,10 +11,8 @@ import { dbConnect, dbDisconnect } from "./src/config/dbConnect.js";
 
 //#endregion
 
-initSentry();
-startProfiling();
-
 const app = express();
+
 let serverInstance;
 let isServerRunning = false;
 
@@ -33,7 +27,6 @@ export const startServer = () => {
     try {
       await dbConnect();
 
-      app.use(Sentry.Handlers.requestHandler());
       app.use(cookieParser());
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
@@ -43,7 +36,7 @@ export const startServer = () => {
       app.use("/api/auth", routes.authRoutes);
       app.use("/api/task", routes.taskRoutes);
 
-      app.use(Sentry.Handlers.errorHandler());
+      Sentry.setupExpressErrorHandler(app);
 
       serverInstance = app.listen(port, () => {
         isServerRunning = true;
@@ -68,8 +61,6 @@ export const startServer = () => {
 };
 
 export const stopServer = async () => {
-  stopProfiling();
-
   if (serverInstance) {
     await dbDisconnect();
 
