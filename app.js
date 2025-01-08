@@ -1,5 +1,6 @@
 //#region import
 import express from "express";
+import { initSentry, startProfiling, stopProfiling } from "./instrument.js";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
@@ -9,6 +10,9 @@ import mdws from "./src/middlewares/index.js";
 import { dbConnect, dbDisconnect } from "./src/config/dbConnect.js";
 
 //#endregion
+
+initSentry();
+startProfiling();
 
 const app = express();
 let serverInstance;
@@ -35,7 +39,7 @@ export const startServer = () => {
       app.use("/api/task", routes.taskRoutes);
 
       // Middleware
-      app.use(mdws.errorHandlingMiddleware);
+      Sentry.setupExpressErrorHandler(app);
 
       serverInstance = app.listen(port, () => {
         isServerRunning = true;
@@ -75,6 +79,7 @@ export const stopServer = async () => {
       });
     });
   }
+  stopProfiling();
 };
 
 if (process.env.NODE_ENV !== "test") {
