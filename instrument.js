@@ -1,9 +1,11 @@
 import * as Sentry from "@sentry/node";
 
+import("dotenv/config");
+
 console.log("Instrumenting Sentry with Node Profiling");
 
 Sentry.init({
-  dsn: "https://6bbcb2a8f911bc91b3c2c01c51f045e2@o4508607145967616.ingest.de.sentry.io/4508608440041552",
-  tracesSampleRate: 1.0,
-  profilesSampleRate: 1.0,
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: parseFloat(process.env.SENTRY_TRACES_SAMPLE_RATE),
+  profilesSampleRate: parseFloat(process.env.SENTRY_PROFILES_SAMPLE_RATE),
 });
