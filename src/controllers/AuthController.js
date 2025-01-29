@@ -27,6 +27,7 @@ const AuthController = {
         message: "User registered successfully",
         userId: newUser._id,
         redirectUrl: authResult.redirectUrl,
+        token: authResult.token,
       });
     } catch (error) {
       next(error);
